@@ -12,3 +12,4 @@ I'm only planning on supporting `amd64`, `i386`, `aarch64`, `arm` and `riscv` ar
 
 ## Possible future ideas:
 - Disassembler
+
