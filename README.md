@@ -10,7 +10,7 @@ I'm not yet sure where exactly I want to go with this, but I'm currently just wr
 
 \[x]: Done\
 \[-]: In progress\
-\[]: Haven't started\
+\[]: Haven't started
 
 ## Possible future ideas:
 - Disassembler
