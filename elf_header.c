@@ -62,6 +62,7 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 	// Only supported architectures at the moment are: ARM, AMD64, AARCH64, RISCV and "none"
 	memcpy(&header->machine, header_data+offset, 2);
 	if (header->machine != ELF_MACHINE_NONE &&
+		header->machine != ELF_MACHINE_I386 &&
 		header->machine != ELF_MACHINE_ARM &&
 		header->machine != ELF_MACHINE_AMD64 &&
 		header->machine != ELF_MACHINE_AARCH64 &&
