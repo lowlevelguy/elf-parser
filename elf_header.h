@@ -61,7 +61,7 @@ enum {
 	ELF_MACHINE_RISCV = 243
 };
 
-typedef struct {
+typedef struct ELFIdentifier {
 	uint8_t mag[4],			// constant signature (0x7f, "ELF
 			ei_class,		// 32-bits / 64-bits
 			data,			// data encoding
@@ -70,7 +70,7 @@ typedef struct {
 			abiversion		// ABI version
 } ELFIdentifier;
 
-typedef struct {
+typedef struct ELFHeader {
 	ELFIdentifier ident;	// elf identifier
 
 	uint16_t type,			// file type
