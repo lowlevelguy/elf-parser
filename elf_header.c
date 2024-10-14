@@ -71,5 +71,54 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 	}
 	offset += 2;
 
+	// Checking ELF version
+	if (header_data[offset] != ELF_VERSION_CURRENT) {
+		header->version = ELF_VERSION_INVALID;
+		offset += 4;
+	} else {
+		memcpy(&header->version, header_data+offset, 4);
+		offset += 4;
+	}
+
+	// Getting program entry point
+	memcpy(&header->entry, header_data+offset, 4);
+	offset += 4;
+
+	// Getting program headers offset
+	memcpy(&header->phoff, header_data+offset, 4);
+	offset += 4;
+
+	// Getting section headers offset
+	memcpy(&header->shoff, header_data+offset, 4);
+	offset += 4;
+
+	// Getting flags 
+	memcpy(&header->flags, header_data+offset, 4);
+	offset += 4;
+
+	// Getting elf header size
+	memcpy(&header->ehsize, header_data+offset, 2);
+	offset += 2;
+
+	// Getting size per single program header 
+	memcpy(&header->phentsize, header_data+offset, 2);
+	offset += 2;
+
+	// Getting number of program headers
+	memcpy(&header->phnum, header_data+offset, 2);
+	offset += 2;
+
+	// Getting size per single section header 
+	memcpy(&header->shentsize, header_data+offset, 2);
+	offset += 2;
+
+	// Getting number of section headers
+	memcpy(&header->shnum, header_data+offset, 2);
+	offset += 2;
+
+	// Getting index of the names section
+	memcpy(&header->shstrndx, header_data+offset, 2);
+	offset += 2;
+
 	return header;
 }

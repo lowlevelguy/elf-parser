@@ -22,8 +22,7 @@ int main (int argc, char** argv) {
 		return -1;
 	}
 
-	for (int i = 0; i < 52; i++)
-		putchar(header[i]);
+	ELFHeader* elf_header = parse_elf_header(header);
 
 	return 0;
 }
