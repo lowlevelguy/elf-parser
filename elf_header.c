@@ -1,4 +1,4 @@
-#include <complex.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "elf_header.h"
@@ -122,3 +122,31 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 
 	return header;
 }
+
+void print_elf_header (ELFHeader h) {
+	printf("ELF IDENTIFIER:\n");
+	printf("\tFile format: %#x, %c%c%c\n", h.ident.mag[0], h.ident.mag[1], h.ident.mag[2], h.ident.mag[3]);
+	printf("\tELF class: %#x\n", h.ident.ei_class);
+	printf("\tELF version: %#x\n", h.ident.version);
+	printf("\tTarget OS ABI: %#x\n", h.ident.osabi);
+	printf("\tABI version: %#x\n", h.ident.abiversion);
+
+	printf("\nBASIC FILE INFORMATION:\n");
+	printf("\tFile type: %#x\n", h.type);
+	printf("\tTarget architecture: %#x\n", h.machine);
+	printf("\tProgram entry point: %#x\n", h.entry);
+	printf("\tFlags: %#x\n", h.flags);
+	printf("\tELF header size: %#x\n", h.ehsize);
+
+	printf("\nPROGRAM:\n");
+	printf("\tProgram headers offset: %#x\n", h.phoff);
+	printf("\tProgram header size: %#x\n", h.phentsize);
+	printf("\tProgram headers count: %#x\n", h.phnum);
+
+	printf("\nSECTIONS:\n");
+	printf("\tSection headers offset: %#x\n", h.shoff);
+	printf("\tSection header size: %#x\n", h.shentsize);
+	printf("\tSection headers count: %#x\n", h.shnum);
+	printf("\tSection names location in section header table: %#x\n", h.shstrndx);
+}
+

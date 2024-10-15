@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,7 +16,7 @@ int main (int argc, char** argv) {
 		return -1;
 	}
 
-	uint8_t* header;
+	uint8_t* header = malloc(sizeof(uint8_t) * 52);
 	fread(header, 1, 52, exec);
 	if (header == NULL) {
 		fprintf(stderr, "Failed to read from file: `%s`\n", argv[1]);
@@ -23,6 +24,7 @@ int main (int argc, char** argv) {
 	}
 
 	ELFHeader* elf_header = parse_elf_header(header);
+	print_elf_header(*elf_header);
 
 	return 0;
 }

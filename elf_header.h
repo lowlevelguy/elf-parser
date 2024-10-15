@@ -88,8 +88,9 @@ struct ELFHeader {
 			 phnum,			// number of prog headers
 			 shentsize,		// single section header size
 			 shnum,			// number of section headers
-			 shstrndx;		// index of the names section
+			 shstrndx;		// index of section header table containing section names
 };
 typedef struct ELFHeader ELFHeader;
 
-ELFHeader* parse_elf_header (uint8_t* header);
+ELFHeader* parse_elf_header (uint8_t* header_data);
+void print_elf_header (ELFHeader h);
