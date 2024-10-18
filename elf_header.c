@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "elf_header.h"
 
 ELFHeader* parse_elf_header(uint8_t* header_data) {
@@ -59,15 +60,14 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 	offset += 2;
 
 	// Checking target architecture
-	// Only supported architectures at the moment are: ARM, AMD64, AARCH64, RISCV and "none"
+	// Only supported architectures at the moment are: ARM, AMD64, AARCH64, and RISCV
 	memcpy(&header->machine, header_data+offset, 2);
-	if (header->machine != ELF_MACHINE_NONE &&
-		header->machine != ELF_MACHINE_I386 &&
+	if (header->machine != ELF_MACHINE_I386 &&
 		header->machine != ELF_MACHINE_ARM &&
 		header->machine != ELF_MACHINE_AMD64 &&
 		header->machine != ELF_MACHINE_AARCH64 &&
 		header->machine != ELF_MACHINE_RISCV) {
-		return ELF_HEADER_UNSUPPORTED_MACHINE;
+		header->machine = ELF_MACHINE_UNSUPPORTED;
 	}
 	offset += 2;
 
@@ -123,17 +123,102 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 	return header;
 }
 
+struct data_map {
+	int i;
+	char* s;
+};
+
 void print_elf_header (ELFHeader h) {
+	// Mapping each field value to its corresponding interpretation
+	const struct data_map elf_class[] = {
+		{ELF_BITS_INVALID, "invalid"},
+		{ELF_BITS_32, "32 bit"},
+		{ELF_BITS_64, "64 bit"}
+	},
+	elf_encoding[] = {
+		{ELF_ENCODING_INVALID, "invalid"},
+		{ELF_ENCODING_LITTLE_ENDIAN, "little endian"},
+		{ELF_ENCODING_BIG_ENDIAN, "big endian"}
+	},
+	elf_osabi[] = {
+		{ELF_ABI_SYSTEM_V, "System V"},
+		{ELF_ABI_HP_UX, "HP UX"},
+		{ELF_ABI_NET_BSD, "NetBSD"},
+		{ELF_ABI_LINUX, "Linux"},
+		{ELF_ABI_GNU_HURD, "GNU Hurd"},
+		{ELF_ABI_SOLARIS, "Solaris"},
+		{ELF_ABI_AIX, "AIX"},
+		{ELF_ABI_IRIX, "IRIX"},
+		{ELF_ABI_FREE_BSD, "FreeBSD"},
+		{ELF_ABI_TRU64, "Tru64"},
+		{ELF_ABI_NOVELL_MODESTO, "Novell Modesto"},
+		{ELF_ABI_OPEN_BSD, "OpenBSD"},
+		{ELF_ABI_OPEN_VMS, "OpenVMS"},
+		{ELF_ABI_NONSTOP_KERNEL, "NonStop Kernel"},
+		{ELF_ABI_AROS, "AROS"},
+		{ELF_ABI_FENIX_OS, "Fenix OS"},
+		{ELF_ABI_NUXI_CLOUD_ABI, "Nuxi CloudABI"},
+		{ELF_ABI_STRATUS_TECHNOLOGIES_OPEN_VOS, "Stratus Technologies OpenVOS"},
+	},
+	elf_type[] = {
+		{ELF_TYPE_NONE, "none"},
+		{ELF_TYPE_REL, "relocatable"},
+		{ELF_TYPE_EXEC, "executable"},
+		{ELF_TYPE_DYN, "shared object file"},
+		{ELF_TYPE_CORE, "core dump"}
+	},
+	elf_machine[] = {
+		{ELF_MACHINE_UNSUPPORTED, "unknown"},
+		{ELF_MACHINE_I386, "i386"},
+		{ELF_MACHINE_ARM, "arm"},
+		{ELF_MACHINE_AMD64, "amd64/x86_64"},
+		{ELF_MACHINE_AARCH64, "aarch64"},
+		{ELF_MACHINE_RISCV, "riscv"}
+	};
+
+
 	printf("ELF IDENTIFIER:\n");
 	printf("\tFile format: %#x, %c%c%c\n", h.ident.mag[0], h.ident.mag[1], h.ident.mag[2], h.ident.mag[3]);
-	printf("\tELF class: %#x\n", h.ident.ei_class);
-	printf("\tELF version: %#x\n", h.ident.version);
-	printf("\tTarget OS ABI: %#x\n", h.ident.osabi);
-	printf("\tABI version: %#x\n", h.ident.abiversion);
+	
+	for (int i = 0; i < sizeof(elf_class)/sizeof(struct data_map); i++) {
+		if (h.ident.ei_class == elf_class[i].i) {
+			printf("\tELF class: %s\n", elf_class[i].s);
+			break;
+		}
+	}
+	
+	for (int i = 0; i < sizeof(elf_encoding)/sizeof(struct data_map); i++) {
+		if (h.ident.data == elf_encoding[i].i) {
+			printf("\tData encoding: %s\n", elf_encoding[i].s);
+			break;
+		}
+	}
+
+	printf("\tELF version: %s\n", h.ident.version ? "current" : "invalid");
+	
+	for (int i = 0; i < sizeof(elf_osabi)/sizeof(struct data_map); i++) {
+		if (h.ident.osabi == elf_osabi[i].i) {
+			printf("\tTarget OS ABI: %s\n", elf_osabi[i].s);
+			break;
+		}
+	}
+	printf("\tABI version: %d\n", h.ident.abiversion);
 
 	printf("\nBASIC FILE INFORMATION:\n");
-	printf("\tFile type: %#x\n", h.type);
-	printf("\tTarget architecture: %#x\n", h.machine);
+
+	for (int i = 0; i < sizeof(elf_type)/sizeof(struct data_map); i++) {
+		if (h.type == elf_type[i].i) {
+			printf("\tFile type: %s\n", elf_type[i].s);
+			break;
+		}
+	}
+
+	for (int i = 0; i < sizeof(elf_machine)/sizeof(struct data_map); i++) {
+		if (h.machine == elf_machine[i].i) {
+			printf("\tTarget architecture: %s\n", elf_machine[i].s);
+			break;
+		}
+	}
 	printf("\tProgram entry point: %#x\n", h.entry);
 	printf("\tFlags: %#x\n", h.flags);
 	printf("\tELF header size: %#x\n", h.ehsize);

@@ -53,7 +53,7 @@ enum {
 };
 
 enum {
-	ELF_MACHINE_NONE,
+	ELF_MACHINE_UNSUPPORTED,
 	ELF_MACHINE_I386 = 3,
 	ELF_MACHINE_ARM = 40,
 	ELF_MACHINE_AMD64 = 62,
@@ -62,7 +62,7 @@ enum {
 };
 
 struct ELFIdentifier {
-	uint8_t mag[4],			// constant signature (0x7f, "ELF
+	uint8_t mag[4],			// constant signature (0x7f, "ELF")
 			ei_class,		// 32-bits / 64-bits
 			data,			// data encoding
 	 		version,		// elf version, 0 for invalid, 1 for current
