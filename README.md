@@ -6,9 +6,9 @@ I'm not yet sure where exactly I want to go with this, but I'm currently just wr
 I'm only planning on supporting `amd64`, `i386`, `aarch64`, `arm` and `riscv` architectures; though I've yet to get to implementing the code for the 64-bit ones.
 
 ## List of things to do for now:
-**ELF header parsing:** in progress\
-**Program header parsing:** yet to start\
-**Section header parsing:** yet to start
+**[x] ELF header parsing**\
+**[]  Program header parsing**\
+**[]  Section header parsing**
 
 ## Possible future ideas:
 - Disassembler
