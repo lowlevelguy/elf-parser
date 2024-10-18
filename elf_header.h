@@ -93,4 +93,4 @@ struct ELFHeader {
 typedef struct ELFHeader ELFHeader;
 
 ELFHeader* parse_elf_header (uint8_t* header_data);
-void print_elf_header (ELFHeader h);
+void print_elf_header (const ELFHeader h);

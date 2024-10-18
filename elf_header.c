@@ -128,7 +128,7 @@ struct data_map {
 	char* s;
 };
 
-void print_elf_header (ELFHeader h) {
+void print_elf_header (const ELFHeader h) {
 	// Mapping each field value to its corresponding interpretation
 	const struct data_map elf_class[] = {
 		{ELF_BITS_INVALID, "invalid"},

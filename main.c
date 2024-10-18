@@ -24,6 +24,24 @@ int main (int argc, char** argv) {
 	}
 
 	ELFHeader* elf_header = parse_elf_header(header);
+	if ((long int)elf_header < 0) {
+		switch ((long int)elf_header) {
+			case (long int)ELF_HEADER_NOT_ELF:
+				fprintf(stderr, "Error: file `%s` is not an ELF file.\n", argv[1]);
+				break;
+			case (long int)ELF_HEADER_NOT_32BITS:
+				fprintf(stderr, "Error: file `%s` target architecture is not 32-bits. Only 32-bit ELF files are supported.\n", argv[1]);
+				break;
+			case (long int)ELF_HEADER_INVALID_ABI:
+				fprintf(stderr, "Error: file `%s` invalid ABI.\n", argv[1]);
+				break;
+			case (long int)ELF_HEADER_INVALID_TYPE:
+				fprintf(stderr, "Error: file `%s` invalid ELF type.\n", argv[1]);
+				break;
+		};
+		return -1;
+	} 
+
 	print_elf_header(*elf_header);
 
 	return 0;
