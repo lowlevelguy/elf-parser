@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "elf_header.h"
+#include "prog_header.h"
 
 int main (int argc, char** argv) {
 	if (argc != 2) {
@@ -43,6 +44,11 @@ int main (int argc, char** argv) {
 	} 
 
 	print_elf_header(*elf_header);
+
+	for (int i = 0; i < elf_header->phnum; i++) {
+		fread(header, 1, elf_header->phentsize, exec);
+		ProgHeader* prog_header = parse_prog_header(header);
+	}
 
 	return 0;
 }

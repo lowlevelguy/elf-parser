@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 #define ELF_HEADER_NOT_ELF 				(void*) -1

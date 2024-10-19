@@ -13,12 +13,14 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 	memcpy(header->ident.mag, header_data, 4);
 	offset += 4;
 	if (memcmp(header->ident.mag, "\x7f" "ELF", 4)) {
+		free(header);
 		return ELF_HEADER_NOT_ELF;
 	}
 
 	// Checking target architecture class (32 vs 64 bits)
 	// For now, we're only supporting 32 bit programs, so any 64 bit ones will return an error
 	if (header_data[offset] != ELF_BITS_32) {
+		free(header);
 		return ELF_HEADER_NOT_32BITS;
 	}
 	header->ident.ei_class = header_data[offset++];
@@ -41,6 +43,7 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 
 	// Checking target OS ABI
 	if (header_data[offset] == 5 || header_data[offset] > ELF_ABI_STRATUS_TECHNOLOGIES_OPEN_VOS) {
+		free(header);
 		return ELF_HEADER_INVALID_ABI;	
 	}
 	header->ident.osabi = header_data[offset++];
@@ -55,6 +58,7 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 	// Checking file type
 	memcpy(&header->type, header_data+offset, 2);
 	if (header->type > ELF_TYPE_CORE) {
+		free(header);
 		return ELF_HEADER_INVALID_TYPE;	
 	}
 	offset += 2;
