@@ -46,8 +46,12 @@ int main (int argc, char** argv) {
 	print_elf_header(*elf_header);
 
 	for (int i = 0; i < elf_header->phnum; i++) {
+		printf("\n==========\nProg header %d:\n", i);
+		
 		fread(header, 1, elf_header->phentsize, exec);
+
 		ProgHeader* prog_header = parse_prog_header(header);
+		print_prog_header(*prog_header);
 	}
 
 	return 0;

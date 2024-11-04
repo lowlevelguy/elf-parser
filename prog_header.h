@@ -31,9 +31,9 @@ enum {
 };
 
 enum {
-	PROGRAM_FLAG_X = 1,		// executable
-	PROGRAM_FLAG_W,			// writeable
-	PROGRAM_FLAG_R = 4		// readable
+	PROG_FLAG_X = 1,		// executable
+	PROG_FLAG_W,			// writeable
+	PROG_FLAG_R = 4		// readable
 };
 
 typedef struct {
@@ -48,3 +48,4 @@ typedef struct {
 } ProgHeader; 
 
 ProgHeader* parse_prog_header (const uint8_t* header_data);
+void print_prog_header (const ProgHeader h);
