@@ -44,7 +44,7 @@ typedef struct {
 			 filesz,	// size of the segment in the file image, may be 0
 			 memsz,		// size of the segment in memory, may be 0
 			 flags,		// segment-dependant flags
-			 align;		// 0 and 1 specify no alignment, otherwise should be a power of 2, with vaddr = offset % align
+			 align;		// 0 and 1 specify no alignment, otherwise should be a power of 2, with vaddr ≡ offset [align]
 } ProgHeader; 
 
 ProgHeader* parse_prog_header (const uint8_t* header_data);
