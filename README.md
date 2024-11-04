@@ -7,7 +7,7 @@ I'm only planning on supporting `amd64`, `i386`, `aarch64`, `arm` and `riscv` ar
 
 ## List of things to do for now:
 [x] ELF header parsing\
-[] Program header parsing\
+[x] Program header parsing\
 [] Section header parsing
 
 ## Possible future ideas:
