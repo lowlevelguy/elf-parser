@@ -15,6 +15,11 @@ ProgHeader* parse_prog_header (const uint8_t* header_data) {
 		free(header);
 		return PROG_HEADER_INVALID_TYPE;	
 	}
+	if (header->type >= PROG_TYPE_LOOS && header->type <= PROG_TYPE_HIOS) {
+		header->type = PROG_TYPE_OS_SPECIFIC;
+	} else if (header->type >= PROG_TYPE_LOPROC) {
+		header->type = PROG_TYPE_PROC_SPECIFIC;
+	}
 	offset += 4;
 
 	// Getting segment offset
