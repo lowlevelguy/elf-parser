@@ -115,7 +115,7 @@ void print_prog_header (const ProgHeader header) {
 
 	printf("\tSegment flags: ");
 	for (int i = 0; i < sizeof(prog_flag)/sizeof(struct data_map); i++) {
-		if (header.flags | prog_flag[i].i) {
+		if (header.flags & prog_flag[i].i) {
 			printf("%s ", prog_flag[i].s);
 		}
 	}
