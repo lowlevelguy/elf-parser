@@ -4,8 +4,13 @@
 
 #include "elf_header.h"
 
-ELFHeader* parse_elf_header(uint8_t* header_data) {
-	ELFHeader* header = malloc(sizeof(ELFHeader));
+// returns 1 on success
+// otherwise, returns 0 or negative number depending on the type of the error
+int parse_elf_header(FILE* const file, ELFHeader* const header) {
+	uint8_t header_data[52];
+	if (fread(header_data, 52, 1, file) == 0) {
+		return FILE_NO_READ_PERM;
+	}
 	int offset = 0;
 
 	// Checking file type
@@ -124,7 +129,7 @@ ELFHeader* parse_elf_header(uint8_t* header_data) {
 	memcpy(&header->shstrndx, header_data+offset, 2);
 	offset += 2;
 
-	return header;
+	return 1;
 }
 
 struct data_map {
@@ -132,7 +137,7 @@ struct data_map {
 	char* s;
 };
 
-void print_elf_header (const ELFHeader h) {
+void print_elf_header (const ELFHeader header) {
 	// Mapping each field value to its corresponding interpretation
 	const struct data_map elf_class[] = {
 		{ELF_BITS_INVALID, "invalid"},
@@ -182,60 +187,60 @@ void print_elf_header (const ELFHeader h) {
 
 
 	printf("ELF IDENTIFIER:\n");
-	printf("\tFile format: %#x, %c%c%c\n", h.ident.mag[0], h.ident.mag[1], h.ident.mag[2], h.ident.mag[3]);
+	printf("\tFile format: %#x, %c%c%c\n", header.ident.mag[0], header.ident.mag[1], header.ident.mag[2], header.ident.mag[3]);
 	
 	for (int i = 0; i < sizeof(elf_class)/sizeof(struct data_map); i++) {
-		if (h.ident.ei_class == elf_class[i].i) {
+		if (header.ident.ei_class == elf_class[i].i) {
 			printf("\tELF class: %s\n", elf_class[i].s);
 			break;
 		}
 	}
 	
 	for (int i = 0; i < sizeof(elf_encoding)/sizeof(struct data_map); i++) {
-		if (h.ident.data == elf_encoding[i].i) {
+		if (header.ident.data == elf_encoding[i].i) {
 			printf("\tData encoding: %s\n", elf_encoding[i].s);
 			break;
 		}
 	}
 
-	printf("\tELF version: %s\n", h.ident.version ? "current" : "invalid");
+	printf("\tELF version: %s\n", header.ident.version ? "current" : "invalid");
 	
 	for (int i = 0; i < sizeof(elf_osabi)/sizeof(struct data_map); i++) {
-		if (h.ident.osabi == elf_osabi[i].i) {
+		if (header.ident.osabi == elf_osabi[i].i) {
 			printf("\tTarget OS ABI: %s\n", elf_osabi[i].s);
 			break;
 		}
 	}
-	printf("\tABI version: %d\n", h.ident.abiversion);
+	printf("\tABI version: %d\n", header.ident.abiversion);
 
 	printf("\nBASIC FILE INFORMATION:\n");
 
 	for (int i = 0; i < sizeof(elf_type)/sizeof(struct data_map); i++) {
-		if (h.type == elf_type[i].i) {
+		if (header.type == elf_type[i].i) {
 			printf("\tFile type: %s\n", elf_type[i].s);
 			break;
 		}
 	}
 
 	for (int i = 0; i < sizeof(elf_machine)/sizeof(struct data_map); i++) {
-		if (h.machine == elf_machine[i].i) {
+		if (header.machine == elf_machine[i].i) {
 			printf("\tTarget architecture: %s\n", elf_machine[i].s);
 			break;
 		}
 	}
-	printf("\tProgram entry point: %#x\n", h.entry);
-	printf("\tFlags: %#x\n", h.flags);
-	printf("\tELF header size: %#x\n", h.ehsize);
+	printf("\tProgram entry point: %#x\n", header.entry);
+	printf("\tFlags: %#x\n", header.flags);
+	printf("\tELF header size: %#x\n", header.ehsize);
 
 	printf("\nPROGRAM:\n");
-	printf("\tProgram headers offset: %#x\n", h.phoff);
-	printf("\tProgram header size: %#x\n", h.phentsize);
-	printf("\tProgram headers count: %#x\n", h.phnum);
+	printf("\tProgram headers offset: %#x\n", header.phoff);
+	printf("\tProgram header size: %#x\n", header.phentsize);
+	printf("\tProgram headers count: %#x\n", header.phnum);
 
 	printf("\nSECTIONS:\n");
-	printf("\tSection headers offset: %#x\n", h.shoff);
-	printf("\tSection header size: %#x\n", h.shentsize);
-	printf("\tSection headers count: %#x\n", h.shnum);
-	printf("\tSection names location in section header table: %#x\n", h.shstrndx);
+	printf("\tSection headers offset: %#x\n", header.shoff);
+	printf("\tSection header size: %#x\n", header.shentsize);
+	printf("\tSection headers count: %#x\n", header.shnum);
+	printf("\tSection names location in section header table: %#x\n", header.shstrndx);
 }
 

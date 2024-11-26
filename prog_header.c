@@ -3,10 +3,14 @@
 #include <string.h>
 
 #include "prog_header.h"
+#include "elf_header.h"
 
-ProgHeader* parse_prog_header (const uint8_t* header_data) {
-	ProgHeader* header = malloc(sizeof(*header));
-	
+int parse_prog_header (FILE* const file, const int off, const int size, ProgHeader* const header) {
+	uint8_t* header_data = malloc(size);
+	fseek(file, off, SEEK_SET);	
+	if (fread(header_data, size, 1, file) == 0) {
+		return FILE_NO_READ_PERM;
+	}
 	int offset = 0;
 
 	// Getting segment type
@@ -79,7 +83,7 @@ ProgHeader* parse_prog_header (const uint8_t* header_data) {
 		}
 	}
 
-	return header;
+	return 1;
 }
 
 struct data_map {

@@ -1,11 +1,12 @@
 #pragma once
 
+#include <stdio.h>
 #include <stdint.h>
 
-#define PROG_HEADER_INVALID_TYPE	 		(void*) -1
-#define PROG_HEADER_INVALID_FLAG			(void*) -2
-#define PROG_HEADER_NOT_POWER_OF_2_ALIGN 	(void*) -3
-#define PROG_HEADER_MISMATCH_ALIGN_VADDR	(void*) -4
+#define PROG_HEADER_INVALID_TYPE	 		-1
+#define PROG_HEADER_INVALID_FLAG			-2
+#define PROG_HEADER_NOT_POWER_OF_2_ALIGN 	-3
+#define PROG_HEADER_MISMATCH_ALIGN_VADDR	-4
 
 enum {
 	PROG_TYPE_NULL,		// unused
@@ -47,5 +48,5 @@ typedef struct {
 			 align;		// 0 and 1 specify no alignment, otherwise should be a power of 2, with vaddr ≡ offset [align]
 } ProgHeader; 
 
-ProgHeader* parse_prog_header (const uint8_t* header_data);
+int parse_prog_header (FILE* const file, const int off, const int size, ProgHeader* const header);
 void print_prog_header (const ProgHeader h);

@@ -1,12 +1,14 @@
 #pragma once
 
+#include <stdio.h>
 #include <stdint.h>
 
-#define ELF_HEADER_NOT_ELF 				(void*) -1
-#define ELF_HEADER_NOT_32BITS			(void*) -2
-#define ELF_HEADER_INVALID_ABI			(void*) -3
-#define ELF_HEADER_INVALID_TYPE 		(void*) -4
-#define ELF_HEADER_UNSUPPORTED_MACHINE 	(void*) -5
+#define FILE_NO_READ_PERM				0
+#define ELF_HEADER_NOT_ELF 				-1
+#define ELF_HEADER_NOT_32BITS			-2
+#define ELF_HEADER_INVALID_ABI			-3
+#define ELF_HEADER_INVALID_TYPE 		-4
+#define ELF_HEADER_UNSUPPORTED_MACHINE 	-5
 
 enum {
 	ELF_BITS_INVALID,
@@ -94,5 +96,5 @@ struct ELFHeader {
 };
 typedef struct ELFHeader ELFHeader;
 
-ELFHeader* parse_elf_header (uint8_t* header_data);
+int parse_elf_header(FILE* const file, ELFHeader* const header);
 void print_elf_header (const ELFHeader h);
