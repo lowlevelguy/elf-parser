@@ -2,14 +2,21 @@
 
 I'm not yet sure where exactly I want to go with this, but I'm currently just writing this to get a better grasp on the structure of an ELF executable.
 
-## Unsupported stuff
-I'm only planning on supporting `amd64`, `i386`, `aarch64`, `arm` and `riscv` architectures; though I've yet to get to implementing the code for the 64-bit ones.
+## Building project
+```
+mkdir obj
+make
+```
 
-## List of things to do for now:
-[x] ELF header parsing\
-[x] Program header parsing\
+## Running
+```
+Syntax: elfparse [file]
+```
+
+## TODO List
+[*x*] ELF header parsing\
+[*x*] Program header parsing\
 [] Section header parsing
 
-## Possible future ideas:
-- Disassembler
-
+## Supported architectures
+At the current moment, the only supported architectures are `i386`, `arm` (32-bit) and `riscv`.
