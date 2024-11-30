@@ -4,8 +4,8 @@ I'm not yet sure where exactly I want to go with this, but I'm currently just wr
 
 ## Building project
 ```
-mkdir obj
-make
+$ mkdir obj
+$ make
 ```
 
 ## Running
@@ -14,8 +14,8 @@ Syntax: elfparse [file]
 ```
 
 ## TODO List
-[*x*] ELF header parsing\
-[*x*] Program header parsing\
+[**x**] ELF header parsing\
+[**x**] Program header parsing\
 [] Section header parsing
 
 ## Supported architectures
