@@ -96,5 +96,5 @@ struct ELFHeader {
 };
 typedef struct ELFHeader ELFHeader;
 
-int parse_elf_header(FILE* const file, ELFHeader* const header);
-void print_elf_header (const ELFHeader h);
+int parse_elf_header(FILE* file, ELFHeader* header);
+void print_elf_header (const ELFHeader* h);

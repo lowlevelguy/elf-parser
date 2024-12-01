@@ -18,10 +18,6 @@ enum {
 	PROG_TYPE_PHDR,		// segment containing program header table itself
 	PROG_TYPE_TLS,		// thread-local storage template
 	
-	// my own extra flags for the ranges stuff. these are unreserved values in the standard
-	PROG_TYPE_OS_SPECIFIC,
-	PROG_TYPE_PROC_SPECIFIC,
-
 	// reserved inclusive range, OS specific
 	PROG_TYPE_LOOS = 0x60000000,	// low
 	PROG_TYPE_HIOS = 0x6fffffff,	// high
@@ -48,5 +44,5 @@ typedef struct {
 			 align;		// 0 and 1 specify no alignment, otherwise should be a power of 2, with vaddr ≡ offset [align]
 } ProgHeader; 
 
-int parse_prog_header (FILE* const file, const int off, const int size, ProgHeader* const header);
-void print_prog_header (const ProgHeader h);
+int parse_prog_header (FILE* file, const int off, ProgHeader* header);
+void print_prog_header (const ProgHeader* h);

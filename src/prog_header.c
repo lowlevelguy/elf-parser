@@ -1,84 +1,37 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "prog_header.h"
 #include "elf_header.h"
 
-int parse_prog_header (FILE* const file, const int off, const int size, ProgHeader* const header) {
-	uint8_t* header_data = malloc(size);
+#define PROG_HEADER_32BIT_SIZE	32
+
+int parse_prog_header (FILE* file, const int off, ProgHeader* header) {
 	fseek(file, off, SEEK_SET);	
-	if (fread(header_data, size, 1, file) == 0) {
+	if (fread(header, PROG_HEADER_32BIT_SIZE, 1, file) == 0) {
 		return FILE_NO_READ_PERM;
 	}
-	int offset = 0;
 
-	// Getting segment type
-	memcpy(&header->type, header_data+offset, 4);
 	if (header->type > PROG_TYPE_HIPROC) {
-		free(header);
 		return PROG_HEADER_INVALID_TYPE;	
 	}
-	if (header->type >= PROG_TYPE_LOOS && header->type <= PROG_TYPE_HIOS) {
-		header->type = PROG_TYPE_OS_SPECIFIC;
-	} else if (header->type >= PROG_TYPE_LOPROC) {
-		header->type = PROG_TYPE_PROC_SPECIFIC;
-	}
-	offset += 4;
-
-	// Getting segment offset
-	memcpy(&header->offset, header_data+offset, 4);
-	offset += 4;
-
-	// Getting segment vaddr
-	memcpy(&header->vaddr, header_data+offset, 4);
-	offset += 4;
-
-	// Getting segment paddr
-	memcpy(&header->paddr, header_data+offset, 4);
-	offset += 4;
-
-	// Getting segment size in file
-	memcpy(&header->filesz, header_data+offset, 4);
-	offset += 4;
-
-	// Getting segment size in memory
-	memcpy(&header->memsz, header_data+offset, 4);
-	offset += 4;
 
 	// Getting flags
-	memcpy(&header->flags, header_data+offset, 4);
-	if (header->flags > PROG_TYPE_TLS) {
-		// checking if it's in the OS specific range
-		if (header->flags >= PROG_TYPE_LOOS && header->flags <= PROG_TYPE_HIOS) {	
-			header->flags = PROG_TYPE_OS_SPECIFIC;
-		} else {
-			// checking if it's in the processor specific range
-			if (header->flags >= PROG_TYPE_LOPROC && header->flags <= PROG_TYPE_HIPROC) {	
-				header->flags = PROG_TYPE_PROC_SPECIFIC;
-			} else {
-				free(header);
-				return PROG_HEADER_INVALID_FLAG;
-			}
-
-		}
+	uint32_t flags_mask = PROG_FLAG_R | PROG_FLAG_W | PROG_FLAG_X;
+	if ((header->flags & flags_mask) == 0) {
+		return PROG_HEADER_INVALID_FLAG;
 	}
-	offset += 4;
 	
 	// Getting segment alignment
-	memcpy(&header->align, header_data+offset, 4);
 	if (header->align <= 1) {
 		header->align = 0;
 	} else {
 		// check if it's not a power of 2
 		if ((header->align & (header->align - 1)) != 0) {
-			free(header);
 			return PROG_HEADER_NOT_POWER_OF_2_ALIGN;
 		}
 
 		// check if the vaddr, offset and align equation doesn't hold
 		if ((header->vaddr - header->offset) % header->align != 0) {
-			free(header);
 			return PROG_HEADER_MISMATCH_ALIGN_VADDR;
 		}
 	}
@@ -91,7 +44,7 @@ struct data_map {
 	char* s;
 };
 
-void print_prog_header (const ProgHeader header) {
+void print_prog_header (const ProgHeader* h) {
 	const struct data_map prog_type[] = {
 		{PROG_TYPE_NULL, "unused"},
 		{PROG_TYPE_LOAD, "loadable"},
@@ -101,8 +54,6 @@ void print_prog_header (const ProgHeader header) {
 		{PROG_TYPE_SHLIB, "reserved, non-ABI conformant"},
 		{PROG_TYPE_PHDR, "program header table"},
 		{PROG_TYPE_TLS, "thread local storage template"},
-		{PROG_TYPE_OS_SPECIFIC, "OS specific"},
-		{PROG_TYPE_PROC_SPECIFIC, "processor specific"}
 	}, prog_flag[] = {
 		{PROG_FLAG_X, "executable"},
 		{PROG_FLAG_W, "writeable"},
@@ -110,24 +61,30 @@ void print_prog_header (const ProgHeader header) {
 	};
 
 	for (int i = 0; i < sizeof(prog_type)/sizeof(struct data_map); i++) {
-		if (header.type == prog_type[i].i) {
+		if (h->type == prog_type[i].i) {
 			printf("\tSegment type: %s\n", prog_type[i].s);
 			break;
 		}
 	}
+	// otherwise, if OS or processor specific
+	if (h->type >= PROG_TYPE_LOOS && h->type <= PROG_TYPE_HIOS) {
+		printf("\tSegment type: %#08x, OS specific\n", h->type);
+	} else if (h->type >= PROG_TYPE_LOPROC){
+		printf("\tSegment type: %#08x, processor specific\n", h->type);
+	}
 	
-	printf("\tSegment offset: %#x\n", header.offset);
-	printf("\tSegment virtual address: %#x\n", header.vaddr);
-	printf("\tSegment physical address: %#x\n", header.paddr);
-	printf("\tSegment size in file image: %#x\n", header.filesz);
-	printf("\tSegment size in memory: %#x\n", header.memsz);
+	printf("\tSegment offset: %#x\n", h->offset);
+	printf("\tSegment virtual address: %#x\n", h->vaddr);
+	printf("\tSegment physical address: %#x\n", h->paddr);
+	printf("\tSegment size in file image: %#x\n", h->filesz);
+	printf("\tSegment size in memory: %#x\n", h->memsz);
 
 	printf("\tSegment flags: ");
 	for (int i = 0; i < sizeof(prog_flag)/sizeof(struct data_map); i++) {
-		if (header.flags & prog_flag[i].i) {
+		if (h->flags & prog_flag[i].i) {
 			printf("%s ", prog_flag[i].s);
 		}
 	}
 
-	printf("\n\tSegment alignment: %#x\n", header.align);
+	printf("\n\tSegment alignment: %#x\n", h->align);
 }
