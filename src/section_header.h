@@ -45,7 +45,8 @@ enum {
 	SECTION_FLAG_EXCLUDE = 0x80000000		// section is excluded unless references or allocated (solaris)
 };
 
-typedef struct {
+// Forcing compiler to not pad the struct to avoid undefined behaviour when reading from file into it
+typedef struct __attribute__((packed)) {
 	uint32_t name,			// offset to a string in the .shstrtab section that represents the section's name
 			 type,			// section header type 
 			 flags,			// section header flags

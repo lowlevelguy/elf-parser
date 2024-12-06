@@ -33,7 +33,8 @@ enum {
 	PROG_FLAG_R = 4		// readable
 };
 
-typedef struct {
+// Forcing compiler to not pad the struct to avoid undefined behaviour when reading from file into it
+typedef struct __attribute__((packed)) {
 	uint32_t type,		// program header type
 			 offset,	// offset of the segment in the file image
 			 vaddr,		// virtual address of the segment in memory
