@@ -4,8 +4,8 @@ I'm not yet sure where exactly I want to go with this, but I'm currently just wr
 
 ## Building project
 ```
-$ mkdir obj
-$ make
+mkdir obj
+make
 ```
 P.S. If you're using a compiler other than `gcc`, make sure to modify the `Makefile` accordingly, as well as to replace the `__attribute__((packed))` directive present in some of the header files to whatever it corresponds to for your compiler.
 
