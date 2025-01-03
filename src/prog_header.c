@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "map.h"
 #include "prog_header.h"
 #include "elf_header.h"
 
@@ -39,13 +40,8 @@ int parse_prog_header (FILE* file, const int off, ProgHeader* header) {
 	return 1;
 }
 
-struct data_map {
-	int i;
-	char* s;
-};
-
 void print_prog_header (const ProgHeader* h) {
-	const struct data_map prog_type[] = {
+	const struct map prog_type[] = {
 		{PROG_TYPE_NULL, "unused"},
 		{PROG_TYPE_LOAD, "loadable"},
 		{PROG_TYPE_DYNAMIC, "dynamic linking information"},
@@ -60,7 +56,7 @@ void print_prog_header (const ProgHeader* h) {
 		{PROG_FLAG_R, "readable"}
 	};
 
-	for (int i = 0; i < sizeof(prog_type)/sizeof(struct data_map); i++) {
+	for (int i = 0; i < sizeof(prog_type)/sizeof(struct map); i++) {
 		if (h->type == prog_type[i].i) {
 			printf("\tSegment type: %s\n", prog_type[i].s);
 			break;
@@ -80,7 +76,7 @@ void print_prog_header (const ProgHeader* h) {
 	printf("\tSegment size in memory: %#x\n", h->memsz);
 
 	printf("\tSegment flags: ");
-	for (int i = 0; i < sizeof(prog_flag)/sizeof(struct data_map); i++) {
+	for (int i = 0; i < sizeof(prog_flag)/sizeof(struct map); i++) {
 		if (h->flags & prog_flag[i].i) {
 			printf("%s ", prog_flag[i].s);
 		}

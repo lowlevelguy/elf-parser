@@ -1,5 +1,6 @@
 #include <stdint.h>
 
+#include "map.h"
 #include "elf_header.h"
 #include "section_header.h"
 
@@ -27,13 +28,8 @@ int parse_section_header(FILE* file, const int off, SectionHeader* header) {
 	return 1;
 }
 
-struct data_map {
-	int i;
-	char* s;
-};
-
 void print_section_header (const SectionHeader* h) {
-	const struct data_map section_type[] = {
+	const struct map section_type[] = {
 		{SECTION_TYPE_NULL, "unused"},
 		{SECTION_TYPE_PROGBITS, "program data"},
 		{SECTION_TYPE_SYMTAB, "symbol table"},
@@ -74,7 +70,7 @@ void print_section_header (const SectionHeader* h) {
 	if (h->type >= SECTION_TYPE_LOOS) {
 		printf("\tSection type: %#010x, os specific\n", h->type);
 	} else {
-		for (int i = 0; i < sizeof(section_type)/sizeof(struct data_map); i++) {
+		for (int i = 0; i < sizeof(section_type)/sizeof(struct map); i++) {
 			if (h->type == section_type[i].i) {
 				printf("\tSection type: %s\n", section_type[i].s);
 				break;
@@ -83,7 +79,7 @@ void print_section_header (const SectionHeader* h) {
 	}
 
 	printf("\tSection flags: ");
-	for (int i = 0; i < sizeof(section_flag)/sizeof(struct data_map); i++) {
+	for (int i = 0; i < sizeof(section_flag)/sizeof(struct map); i++) {
 		if (h->flags & section_flag[i].i) {
 			printf("%s ", section_flag[i].s);
 		}

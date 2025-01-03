@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "map.h"
 #include "elf_header.h"
 
 // returns 1 on success
@@ -128,14 +129,9 @@ int parse_elf_header(FILE* file, ELFHeader* header) {
 	return 1;
 }
 
-struct data_map {
-	int i;
-	char* s;
-};
-
 void print_elf_header (const ELFHeader* h) {
 	// Mapping each field value to its corresponding interpretation
-	const struct data_map elf_class[] = {
+	const struct map elf_class[] = {
 		{ELF_BITS_INVALID, "invalid"},
 		{ELF_BITS_32, "32 bit"},
 		{ELF_BITS_64, "64 bit"}
@@ -185,14 +181,14 @@ void print_elf_header (const ELFHeader* h) {
 	printf("ELF IDENTIFIER:\n");
 	printf("\tFile format: %#x, %c%c%c\n", h->ident.mag[0], h->ident.mag[1], h->ident.mag[2], h->ident.mag[3]);
 	
-	for (int i = 0; i < sizeof(elf_class)/sizeof(struct data_map); i++) {
+	for (int i = 0; i < sizeof(elf_class)/sizeof(struct map); i++) {
 		if (h->ident.ei_class == elf_class[i].i) {
 			printf("\tELF class: %s\n", elf_class[i].s);
 			break;
 		}
 	}
 	
-	for (int i = 0; i < sizeof(elf_encoding)/sizeof(struct data_map); i++) {
+	for (int i = 0; i < sizeof(elf_encoding)/sizeof(struct map); i++) {
 		if (h->ident.data == elf_encoding[i].i) {
 			printf("\tData encoding: %s\n", elf_encoding[i].s);
 			break;
@@ -201,7 +197,7 @@ void print_elf_header (const ELFHeader* h) {
 
 	printf("\tELF version: %s\n", h->ident.version ? "current" : "invalid");
 	
-	for (int i = 0; i < sizeof(elf_osabi)/sizeof(struct data_map); i++) {
+	for (int i = 0; i < sizeof(elf_osabi)/sizeof(struct map); i++) {
 		if (h->ident.osabi == elf_osabi[i].i) {
 			printf("\tTarget OS ABI: %s\n", elf_osabi[i].s);
 			break;
@@ -211,14 +207,14 @@ void print_elf_header (const ELFHeader* h) {
 
 	printf("\nBASIC FILE INFORMATION:\n");
 
-	for (int i = 0; i < sizeof(elf_type)/sizeof(struct data_map); i++) {
+	for (int i = 0; i < sizeof(elf_type)/sizeof(struct map); i++) {
 		if (h->type == elf_type[i].i) {
 			printf("\tFile type: %s\n", elf_type[i].s);
 			break;
 		}
 	}
 
-	for (int i = 0; i < sizeof(elf_machine)/sizeof(struct data_map); i++) {
+	for (int i = 0; i < sizeof(elf_machine)/sizeof(struct map); i++) {
 		if (h->machine == elf_machine[i].i) {
 			printf("\tTarget architecture: %s\n", elf_machine[i].s);
 			break;
